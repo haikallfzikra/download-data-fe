@@ -157,15 +157,10 @@ const downloadHourly = async () => {
     return
   }
 
-  const selected = new Date(selectedDate.value)
-  selected.setHours(0, 0, 0, 0)
-  const fromDate = new Date(selected.getTime() - selected.getTimezoneOffset() * 60000).toISOString()
+  const fromDate = `${selectedDate.value}T00:00:00`
+  const toDate = `${selectedDate.value}T23:59:59.999`
 
-  const to = new Date(selected)
-  to.setHours(23, 59, 59, 999)
-  const toDate = new Date(to.getTime() - to.getTimezoneOffset() * 60000).toISOString()
-
-  console.log("fromDate", fromDate, "toDate", toDate);
+  console.log("fromDate", fromDate, "toDate", toDate)
 
   const payload = {
     from_date: fromDate,
@@ -194,6 +189,7 @@ const downloadHourly = async () => {
     alert('Gagal: ' + (err.response?.data?.message || err.message))
   }
 }
+
 
 const downloadDaily = async () => {
   if (!selectedMonth.value || !selectedYear.value) {
