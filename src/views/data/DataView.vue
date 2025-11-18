@@ -209,9 +209,6 @@
           <thead class="bg-gradient-to-r from-blue-500 to-blue-600">
             <tr>
               <th class="px-3 py-2 border-b text-center font-semibold text-white whitespace-nowrap">
-                Stasiun
-              </th>
-              <th class="px-3 py-2 border-b text-center font-semibold text-white whitespace-nowrap">
                 Waktu
               </th>
               <th
@@ -233,11 +230,11 @@
               class="even:bg-blue-100 hover:bg-blue-200 transition-colors"
             >
               <!-- Stasiun -->
-              <td
+              <!-- <td
                 class="px-3 py-2 border-b font-medium text-gray-900 whitespace-normal sm:whitespace-nowrap"
               >
                 {{ row.stasiun }}
-              </td>
+              </td> -->
 
               <!-- Waktu -->
               <td class="px-3 py-2 border-b text-gray-600 whitespace-normal sm:whitespace-nowrap">
@@ -458,7 +455,7 @@ endDate.value = DateTime.now().toISODate()
 const dynamicColumns = computed(() => {
   if (!dataTable.value.length) return []
   const keys = Object.keys(dataTable.value[0]).filter(
-    (key) => !['stasiun', 'waktu', 'tprecipitation'].includes(key),
+    (key) => !['waktu', 'tprecipitation'].includes(key),
   )
 
   if (userStore.user.category === 'aqms') {
@@ -556,15 +553,16 @@ const fetchData = async () => {
   const fromDate = start.toISO()
   const toDate = end.toISO()
 
+  console.log(fromDate, toDate);
+  
+
   let endpoint = ''
   if (dataType.value === '2min') {
-    endpoint = 'https://v2.cbi.mdtapps.id/api/api/sensor-table'
+    endpoint = 'http://localhost:3000/data/2menit'
   } else if (dataType.value === 'hourly') {
     endpoint = 'https://v2.cbi.mdtapps.id/api/sensor-table/hourly'
   } else if (dataType.value === 'daily') {
     endpoint = 'https://v2.cbi.mdtapps.id/api/sensor-table/daily'
-  } else if (userStore.user.category === 'awlr') {
-    endpoint = 'https://v2.cbi.mdtapps.id/api/api/sensor-table/awlr'
   }
 
   loadingTable.value = true
@@ -621,8 +619,6 @@ const fetchChartData = async () => {
     endpoint = 'https://v2.cbi.mdtapps.id/api/api/chart-data/hourly'
   } else if (dataType.value === 'daily') {
     endpoint = 'https://v2.cbi.mdtapps.id/api/api/chart-data/daily'
-  } else if (useUserStore.user.category === 'awlr') {
-    endpoint = 'https://v2.cbi.mdtapps.id/api/api/chart-data/awlr'
   } else {
     endpoint = 'https://v2.cbi.mdtapps.id/api/api/chart-data/monthly'
   }

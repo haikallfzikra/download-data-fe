@@ -157,10 +157,15 @@ const downloadHourly = async () => {
     return
   }
 
-  const fromDate = `${selectedDate.value}T00:00:00`
-  const toDate = `${selectedDate.value}T23:59:59.999`
+  const selected = new Date(selectedDate.value)
+  selected.setHours(0, 0, 0, 0)
+  const fromDate = new Date(selected.getTime() - selected.getTimezoneOffset() * 60000).toISOString()
 
-  console.log("fromDate", fromDate, "toDate", toDate)
+  const to = new Date(selected)
+  to.setHours(23, 59, 59, 999)
+  const toDate = new Date(to.getTime() - to.getTimezoneOffset() * 60000).toISOString()
+
+  console.log("fromDate", fromDate, "toDate", toDate);
 
   const payload = {
     from_date: fromDate,
@@ -189,7 +194,6 @@ const downloadHourly = async () => {
     alert('Gagal: ' + (err.response?.data?.message || err.message))
   }
 }
-
 
 const downloadDaily = async () => {
   if (!selectedMonth.value || !selectedYear.value) {
@@ -229,13 +233,13 @@ const downloadDaily = async () => {
 
 const allCards = {
   default: [
-    { id: 1, title: '2 Menit', fields: { station: true, date: true } },
-    {
-      id: 2,
-      title: 'Hourly',
-      fields: { station: true, date: true },
-    },
-    { id: 3, title: 'Daily', fields: { station: true, month: true, year: true } },
+    { id: 1, title: 'DOWNLOAD DATA', fields: { station: true, date: true } },
+    // {
+    //   id: 2,
+    //   title: 'Hourly',
+    //   fields: { station: true, date: true },
+    // },
+    // { id: 3, title: 'Daily', fields: { station: true, month: true, year: true } },
   ],
 }
 
