@@ -208,6 +208,10 @@
         >
           <thead class="bg-gradient-to-r from-blue-500 to-blue-600">
             <tr>
+              <th
+                class="px-3 py-2 border-b text-center font-semibold text-white whitespace-nowrap">
+                Stasiun
+              </th>
               <th class="px-3 py-2 border-b text-center font-semibold text-white whitespace-nowrap">
                 Waktu
               </th>
@@ -230,11 +234,11 @@
               class="even:bg-blue-100 hover:bg-blue-200 transition-colors"
             >
               <!-- Stasiun -->
-              <!-- <td
+              <td
                 class="px-3 py-2 border-b font-medium text-gray-900 whitespace-normal sm:whitespace-nowrap"
               >
-                {{ row.stasiun }}
-              </td> -->
+                AQMS {{ stationName }}
+              </td>
 
               <!-- Waktu -->
               <td class="px-3 py-2 border-b text-gray-600 whitespace-normal sm:whitespace-nowrap">
@@ -342,6 +346,7 @@ const filterBy = ref('waktu')
 const startDate = ref('')
 const endDate = ref('')
 const showChart = ref(false)
+const stationName = ref('')
 // const byIspuBaru = ref('')
 // const byIspuLama = ref('')
 
@@ -365,13 +370,13 @@ const aqmsColumns = [
   'o3',
   'no2',
   'hc',
-  'wspeed', // Wind Speed
-  'wind_angle', // Wind Direction
+  'wspeed',
+  'wind_angle',
   'humidity',
-  'temp', // Temperature
+  'temp',
   'pressure',
-  'intensity', // Solar Radiation
-  'rain_intensity', // Rain Intensity
+  'intensity',
+  'rain_intensity',
 ]
 
 const dataType = ref('2min')
@@ -380,7 +385,7 @@ const currentPage = ref(1)
 const totalPages = ref(1)
 const chartSeries = ref([])
 const chartCategories = ref([])
-const selectedParams = ref(['pm25']) // default pm25
+const selectedParams = ref(['pm25'])
 const thresholdsChart = {
   pm25: { min: 0, max: 65 },
   pm10: { min: 0, max: 150 },
@@ -477,7 +482,7 @@ function exportToExcel(rows, filename) {
   // Urutkan sesuai aqmsColumns
   const formattedRows = rows.map((row) => {
     const ordered = {
-      stasiun: row.stasiun,
+      stasiun: stationName.value,
       waktu: row.waktu,
     }
     aqmsColumns.forEach((col) => {
@@ -487,7 +492,7 @@ function exportToExcel(rows, filename) {
   })
 
   const ws = XLSX.utils.json_to_sheet(formattedRows, {
-    header: ['stasiun', 'waktu', ...aqmsColumns],
+    header: ['stasiun','waktu', ...aqmsColumns],
   })
   const wb = XLSX.utils.book_new()
   XLSX.utils.book_append_sheet(wb, ws, 'Data')
@@ -506,7 +511,7 @@ async function downloadAllPages() {
 
     let endpoint = ''
     if (dataType.value === '2min') {
-      endpoint = 'https://v2.cbi.mdtapps.id/api/api/sensor-table'
+      endpoint = 'http://localhost:3000/data/2menit'
     } else if (dataType.value === 'hourly') {
       endpoint = 'https://v2.cbi.mdtapps.id/api/sensor-table/hourly'
     } else if (dataType.value === 'daily') {
@@ -527,7 +532,7 @@ async function downloadAllPages() {
     })
 
     const allData = response.data.data
-    exportToExcel(allData, getFileName('aqms_all'))
+    exportToExcel(allData, getFileName('AQMS_' + stationName.value))
   } catch (err) {
     console.error('Gagal download semua data:', err)
   } finally {
@@ -568,20 +573,19 @@ const fetchData = async () => {
   loadingTable.value = true
   try {
     const response = await axios.post(endpoint, {
-      user_id: userStore.user.id,
-      station: JSON.stringify({
-        module_id: userStore.user.module_app_id,
-        station_id: userStore.user.station_id,
-      }),
       from_date: fromDate,
       to_date: toDate,
       parameter: null,
       page: currentPage.value,
       per_page: 20,
+      station_name: stationName,
     })
 
     dataTable.value = response.data.data
+    stationName.value = response.data.stationName
     console.log(dataTable.value)
+    console.log("STATION",stationName.value);
+    
 
     totalPages.value = response.data.total_pages
   } catch (error) {
