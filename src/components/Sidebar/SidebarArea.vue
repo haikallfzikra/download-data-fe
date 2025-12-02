@@ -45,7 +45,6 @@
         </a>
 
         <a
-          v-if="userStore.user.category === 'aqms' || userStore.user.category === 'wqms'"
           href="#"
           @click.prevent="navigate('/data')"
           :class="[
