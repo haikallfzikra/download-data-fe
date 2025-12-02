@@ -470,75 +470,75 @@ const dynamicColumns = computed(() => {
   return keys
 })
 
-function getFileName(prefix) {
-  const start = startDate.value ? DateTime.fromISO(startDate.value).toFormat('yyyy-MM-dd') : 'start'
-  const end = endDate.value ? DateTime.fromISO(endDate.value).toFormat('yyyy-MM-dd') : 'end'
-  return `${prefix}_${start}_from_${end}.xlsx`
-}
+// function getFileName(prefix) {
+//   const start = startDate.value ? DateTime.fromISO(startDate.value).toFormat('yyyy-MM-dd') : 'start'
+//   const end = endDate.value ? DateTime.fromISO(endDate.value).toFormat('yyyy-MM-dd') : 'end'
+//   return `${prefix}_${start}_from_${end}.xlsx`
+// }
 
-function exportToExcel(rows, filename) {
-  if (!rows || !rows.length) return
+// function exportToExcel(rows, filename) {
+//   if (!rows || !rows.length) return
 
-  // Urutkan sesuai aqmsColumns
-  const formattedRows = rows.map((row) => {
-    const ordered = {
-      stasiun: stationName.value,
-      waktu: row.waktu,
-    }
-    aqmsColumns.forEach((col) => {
-      ordered[col] = row[col] ?? '-'
-    })
-    return ordered
-  })
+//   // Urutkan sesuai aqmsColumns
+//   const formattedRows = rows.map((row) => {
+//     const ordered = {
+//       stasiun: stationName.value,
+//       waktu: row.waktu,
+//     }
+//     aqmsColumns.forEach((col) => {
+//       ordered[col] = row[col] ?? '-'
+//     })
+//     return ordered
+//   })
 
-  const ws = XLSX.utils.json_to_sheet(formattedRows, {
-    header: ['stasiun','waktu', ...aqmsColumns],
-  })
-  const wb = XLSX.utils.book_new()
-  XLSX.utils.book_append_sheet(wb, ws, 'Data')
+//   const ws = XLSX.utils.json_to_sheet(formattedRows, {
+//     header: ['stasiun','waktu', ...aqmsColumns],
+//   })
+//   const wb = XLSX.utils.book_new()
+//   XLSX.utils.book_append_sheet(wb, ws, 'Data')
 
-  const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'array' })
-  saveAs(new Blob([excelBuffer], { type: 'application/octet-stream' }), filename)
-}
+//   const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'array' })
+//   saveAs(new Blob([excelBuffer], { type: 'application/octet-stream' }), filename)
+// }
 
-function downloadCurrentPage() {
-  exportToExcel(dataTable.value, getFileName('aqms_page' + currentPage.value))
-}
+// function downloadCurrentPage() {
+//   exportToExcel(dataTable.value, getFileName('aqms_page' + currentPage.value))
+// }
 
-async function downloadAllPages() {
-  try {
-    loadingTable.value = true
+// async function downloadAllPages() {
+//   try {
+//     loadingTable.value = true
 
-    let endpoint = ''
-    if (dataType.value === '2min') {
-      endpoint = 'http://localhost:3000/data/2menit'
-    } else if (dataType.value === 'hourly') {
-      endpoint = 'https://v2.cbi.mdtapps.id/api/sensor-table/hourly'
-    } else if (dataType.value === 'daily') {
-      endpoint = 'https://v2.cbi.mdtapps.id/api/sensor-table/daily'
-    }
+//     let endpoint = ''
+//     if (dataType.value === '2min') {
+//       endpoint = 'http://localhost:3000/data/2menit'
+//     } else if (dataType.value === 'hourly') {
+//       endpoint = 'https://v2.cbi.mdtapps.id/api/sensor-table/hourly'
+//     } else if (dataType.value === 'daily') {
+//       endpoint = 'https://v2.cbi.mdtapps.id/api/sensor-table/daily'
+//     }
 
-    const response = await axios.post(endpoint, {
-      user_id: userStore.user.id,
-      station: JSON.stringify({
-        module_id: userStore.user.module_app_id,
-        station_id: userStore.user.station_id,
-      }),
-      from_date: DateTime.fromISO(startDate.value).startOf('day').toISO(),
-      to_date: DateTime.fromISO(endDate.value).endOf('day').toISO(),
-      parameter: null,
-      page: 1,
-      per_page: totalPages.value * 20,
-    })
+//     const response = await axios.post(endpoint, {
+//       user_id: userStore.user.id,
+//       station: JSON.stringify({
+//         module_id: userStore.user.module_app_id,
+//         station_id: userStore.user.station_id,
+//       }),
+//       from_date: DateTime.fromISO(startDate.value).startOf('day').toISO(),
+//       to_date: DateTime.fromISO(endDate.value).endOf('day').toISO(),
+//       parameter: null,
+//       page: 1,
+//       per_page: totalPages.value * 20,
+//     })
 
-    const allData = response.data.data
-    exportToExcel(allData, getFileName('WQMS_' + stationName.value))
-  } catch (err) {
-    console.error('Gagal download semua data:', err)
-  } finally {
-    loadingTable.value = false
-  }
-}
+//     const allData = response.data.data
+//     exportToExcel(allData, getFileName('WQMS_' + stationName.value))
+//   } catch (err) {
+//     console.error('Gagal download semua data:', err)
+//   } finally {
+//     loadingTable.value = false
+//   }
+// }
 
 const fetchData = async () => {
   if (!startDate.value || !endDate.value) {
