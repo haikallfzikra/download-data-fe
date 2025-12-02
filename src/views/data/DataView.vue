@@ -160,7 +160,7 @@
       </div>
 
       <!-- Export Buttons -->
-      <div class="flex flex-wrap justify-end gap-2 mb-3">
+      <!-- <div class="flex flex-wrap justify-end gap-2 mb-3">
         <button
           @click="downloadCurrentPage"
           class="px-3 py-2 bg-gray-600 text-white rounded hover:bg-blue-700 text-sm"
@@ -173,7 +173,7 @@
         >
           Download All
         </button>
-      </div>
+      </div> -->
 
       <div class="w-full overflow-x-auto rounded-xl border border-gray-200 shadow-sm min-h-[200px]">
         <!-- Loading State -->
